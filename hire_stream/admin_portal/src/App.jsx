@@ -1,5 +1,6 @@
+
 import { useSelector } from "react-redux";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import AdminRoute from "./components/non-shadcn/AdminRoute";
 import AuthenticatedRoutes from "./components/non-shadcn/AuthenticatedRoute";
 import ScrollToTop from "./components/non-shadcn/ScrollToTop";
@@ -17,6 +18,7 @@ import User from "./pages/User";
 import Verification from "./pages/Verification";
 import Company from "./pages/Company";
 import Upload from "./pages/UploadData";
+import { Button } from "@/components/ui/button";
 
 export default function App() {
   const { currentUser: user } = useSelector((state) => state.user);
@@ -68,9 +70,8 @@ export default function App() {
               <Route
                 path="companies"
                 element={<Companies userRole={user.role} />}
-              >
-              </Route>
-                <Route path="/companies/:companyId" element={<Company />} />
+              />
+              <Route path="/companies/:companyId" element={<Company />} />
 
               <Route path="forms" element={<AdminRoute />}>
                 <Route path="" element={<Forms />} />
@@ -78,26 +79,49 @@ export default function App() {
                 <Route path="job" element={<PostJob user={user} />} />
               </Route>
               <Route path="/verify" element={<Verification verify={true} />} />
-              {/* need to make true verification status */}
               <Route path="/team" element={<Verification verify={false} />} />
               <Route path="/upload" element={<Upload />} />
             </Route>
+
             <Route
               path="/user"
               element={
-                <div className="grid gap-4 md:grid-cols-3">
-                  {/* {users.map((user) => (
-                    <UserCard key={user.uid} user={user} />
-                  ))} */}
-                  users
-                </div>
+                <div className="grid gap-4 md:grid-cols-3">users</div>
               }
             />
             <Route path="/user/:userId" element={<User user={user} />} />
             <Route path="/account" element={<Account />} />
           </Route>
         ) : (
-          <Route path="/" element={<Home />} />
+          <>
+            {/* Public routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/jobs" element={<Jobs />} />
+            <Route
+              path="/jobs/:jobId"
+              element={
+                <div className="flex flex-col items-center justify-center min-h-screen text-center p-6">
+                  <h2 className="text-2xl font-bold mb-4">
+                    Please Sign In or Sign Up to Apply for Jobs
+                  </h2>
+                  <div className="flex gap-4">
+                    <Button
+                      onClick={() => (window.location.href = "/sign-in")}
+                      className="bg-indigo-500 text-white"
+                    >
+                      Sign In
+                    </Button>
+                    <Button
+                      onClick={() => (window.location.href = "/sign-up")}
+                      className="bg-green-500 text-white"
+                    >
+                      Sign Up
+                    </Button>
+                  </div>
+                </div>
+              }
+            />
+          </>
         )}
         <Route
           path="/sign-in"
@@ -107,9 +131,6 @@ export default function App() {
           path="/sign-up"
           element={user ? <Navigate to="/" /> : <SignUp />}
         />
-        {/* <Route element={<PrivateRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Route> */}
       </Routes>
     </BrowserRouter>
   );
